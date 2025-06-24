@@ -1,0 +1,356 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPB+sDvCVCFisEJ1xgoXrI1",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Anaya666/Anaya666/blob/main/hotels-usability-prompting\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "import seaborn as sns"
+      ],
+      "metadata": {
+        "id": "QCiOpV5BQwSU"
+      },
+      "execution_count": 1,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 3,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "kCCzK4C_QByz",
+        "outputId": "e1af71e0-63d4-47ab-f50e-89aaf5a94ef3"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "                                                 API's 6/16/2025 6/17/2025  \\\n",
+            "0                  /hk-crs/derbysoft/ari/daily/details    492.1K    491.9K   \n",
+            "1                       /v4/crs/rates/property/summary    438.7K    430.7K   \n",
+            "2                                    /hk-crs/fetch/ari    308.9K    279.2K   \n",
+            "3          /v4/hotelbrand/registered-devices/heartbeat    184.2K    191.9K   \n",
+            "4      /v4/hotelbrand/properties/*/reservations/*/mini    121.9K    120.8K   \n",
+            "..                                                 ...       ...       ...   \n",
+            "378  /v4/hotelbrand/properties/*/reservations/*/pay...         0         0   \n",
+            "379  /v4/hotelbrand/properties/*/reservations/*/pay...         1         0   \n",
+            "380        /v4/hotelbrand/properties/*/tax-recalculate         0         0   \n",
+            "381         /v4/hotelbrand/roles/*/assign-user-to-role         0         1   \n",
+            "382                                        Grand Total      2.2M      2.2M   \n",
+            "\n",
+            "    6/18/2025 6/19/2025 6/20/2025 6/21/2025 6/22/2025 Grand Total  \n",
+            "0      491.9K    492.1K    491.9K    492.1K    491.3K        3.4M  \n",
+            "1      412.4K    413.8K    435.2K    385.2K    355.7K        2.9M  \n",
+            "2      295.5K    288.9K    308.0K    275.4K    275.1K        2.0M  \n",
+            "3      194.4K    188.7K    186.5K    191.2K    186.1K        1.3M  \n",
+            "4      119.7K    121.2K    123.0K    131.4K    129.8K      867.8K  \n",
+            "..        ...       ...       ...       ...       ...         ...  \n",
+            "378         0         0         0         0         1           1  \n",
+            "379         0         0         0         0         0           1  \n",
+            "380         0         0         1         0         0           1  \n",
+            "381         0         0         0         0         0           1  \n",
+            "382      2.2M      2.2M      2.3M      2.2M      2.1M       15.4M  \n",
+            "\n",
+            "[383 rows x 9 columns]\n"
+          ]
+        }
+      ],
+      "source": [
+        "data_ESA = pd.read_csv('/content/API last 7 days usability matrix  - ESA.csv')\n",
+        "print(data_ESA)"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_ESA.columns = [col.strip().replace(' ', '_').lower() for col in data_ESA.columns]\n",
+        "print(data_ESA.columns)"
+      ],
+      "metadata": {
+        "id": "ZRyrC7yUW2GE"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_G6 = pd.read_csv('/content/API last 7 days usability matrix  - G6.csv')\n",
+        "print(data_G6)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "zryMkj-RQzaS",
+        "outputId": "f956e6d0-bf45-495b-f7e4-7b7ddbfea40e"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "                                                 API's 6/16/2025 6/17/2025  \\\n",
+            "0                           /v4/hotelbrand/mask-fields     84.2K     82.8K   \n",
+            "1    /v4-ext/hotelbrand/properties/*/calendar/rates...     67.2K     67.0K   \n",
+            "2          /v4/hotelbrand/registered-devices/heartbeat     73.4K     74.6K   \n",
+            "3    /v4/hotelbrand/properties/*/reservations/*/gue...     58.7K     58.9K   \n",
+            "4       /v4/hotelbrand/properties/*/suggested_rooms/v2     38.2K     36.2K   \n",
+            "..                                                 ...       ...       ...   \n",
+            "355                          /v4/hotelbrand/rate-codes         0         0   \n",
+            "356  /v4/hotelbrand/schedules/invoice-schedule-conf...         0         0   \n",
+            "357                        /v4/hotelbrand/task-manager         0         1   \n",
+            "358          /v4/hotelbrand/user-templates/upload-file         0         1   \n",
+            "359                                        Grand Total    995.6K    969.4K   \n",
+            "\n",
+            "    6/18/2025 6/19/2025 6/20/2025 6/21/2025 6/22/2025 Grand Total  \n",
+            "0       78.1K     87.0K    107.0K    122.8K     99.9K      661.7K  \n",
+            "1       69.0K     76.2K     84.3K    100.1K     81.1K      544.9K  \n",
+            "2       72.0K     73.1K     72.7K     72.7K     74.6K      513.0K  \n",
+            "3       58.1K     68.4K     88.4K     98.2K     69.0K      499.8K  \n",
+            "4       36.7K     41.7K     52.3K     56.0K     41.5K      302.5K  \n",
+            "..        ...       ...       ...       ...       ...         ...  \n",
+            "355         0         0         1         0         0           1  \n",
+            "356         0         0         0         1         0           1  \n",
+            "357         0         0         0         0         0           1  \n",
+            "358         0         0         0         0         0           1  \n",
+            "359    982.0K      1.1M      1.2M      1.4M      1.2M        7.8M  \n",
+            "\n",
+            "[360 rows x 9 columns]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_GS= pd.read_csv('/content/API last 7 days usability matrix  - GS(US-WEST).csv')\n",
+        "print(data_GS)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "7lY4t3FuTYYN",
+        "outputId": "472909b9-4030-4232-d3b8-8d2aff6507ad"
+      },
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "                                                 API's 6/16/2025 6/17/2025  \\\n",
+            "0     /v41/hotelbrand/properties/*/booking-fee/charges    261.7K    260.7K   \n",
+            "1    /hk-crs/hotelbrand/properties/*/booking-fee/ch...    260.9K    259.9K   \n",
+            "2                           /hk-crs/sabre-crs/callback    151.7K    216.4K   \n",
+            "3    /v41/hotelbrand/properties/*/calendar/rates-wi...     72.7K     75.1K   \n",
+            "4    /v41-reports/hotelbrand/properties/*/dynamic-r...     40.6K     43.3K   \n",
+            "..                                                 ...       ...       ...   \n",
+            "966  /v41/hotelbrand/properties/*/room-mappings/upload         0         0   \n",
+            "967         /v41/hotelbrand/properties/*/screen-config         0         0   \n",
+            "968             /v41/hotelbrand/properties/*/seasons/*         1         0   \n",
+            "969  /v41/hotelbrand/properties/*/transfer-payments...         0         0   \n",
+            "970                                        Grand Total      1.3M      1.3M   \n",
+            "\n",
+            "    6/18/2025 6/19/2025 6/20/2025 6/21/2025 6/22/2025 Grand Total  \n",
+            "0      212.6K    238.9K    295.0K    318.7K    290.2K        1.9M  \n",
+            "1      211.8K    238.0K    293.7K    317.4K    288.9K        1.9M  \n",
+            "2      163.1K    148.8K    112.4K     72.1K     79.6K      944.0K  \n",
+            "3       68.0K     69.4K     75.3K     70.9K     65.6K      497.0K  \n",
+            "4       42.1K     47.0K     52.6K     49.4K     44.4K      319.5K  \n",
+            "..        ...       ...       ...       ...       ...         ...  \n",
+            "966         0         1         0         0         0           1  \n",
+            "967         0         0         1         0         0           1  \n",
+            "968         0         0         0         0         0           1  \n",
+            "969         0         0         0         0         1           1  \n",
+            "970      1.2M      1.3M      1.4M      1.4M      1.2M        9.1M  \n",
+            "\n",
+            "[971 rows x 9 columns]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_IHG_APAC = pd.read_csv('/content/API\\'s Last 7 Days Analysis for 2XX - IHG_APAC.csv')\n",
+        "print(data_IHG_APAC)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "UqXBJAu7T2Lc",
+        "outputId": "2fc74250-261c-4227-fc48-e95c7ff5bb1a"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "                                                 API's 6/16/2025 6/17/2025  \\\n",
+            "0                  /thirdparty/hotelbrand/stream/*/ack     60.6K     60.3K   \n",
+            "1    /hk-property-interfaces/ihg/properties/*/hkli-...     15.0K     14.9K   \n",
+            "2    /v4-reports/ihg/properties/*/dynamic-reports/g...      8.9K      9.9K   \n",
+            "3    /hk-ihg/feeds/ihg-interface/flattened-rate-pla...     10.9K     10.0K   \n",
+            "4    /v4/ihg/properties/*/reservations/*/guests/modify      7.3K      7.2K   \n",
+            "..                                                 ...       ...       ...   \n",
+            "352  /v4/ihg/properties/*/reservations/*/sharer/act...         0         1   \n",
+            "353  /v4/ihg/properties/*/reservations/*/vehicles/u...         0         0   \n",
+            "354               /v4/ihg/properties/*/tax-recalculate         0         0   \n",
+            "355                      /v4/ihg/user-permission-roles         0         0   \n",
+            "356                                        Grand Total    134.8K    133.0K   \n",
+            "\n",
+            "    6/18/2025 6/19/2025 6/20/2025 6/21/2025 6/22/2025 Grand Total  \n",
+            "0       60.3K     57.5K     59.1K     56.6K     57.1K      411.4K  \n",
+            "1       14.9K     14.8K     14.9K     14.9K     14.8K      104.2K  \n",
+            "2       10.4K      8.7K      8.7K      8.3K      7.1K       62.1K  \n",
+            "3        7.0K      8.2K      8.0K      6.4K      7.6K       58.0K  \n",
+            "4        7.7K      7.1K      6.7K      6.5K      6.0K       48.7K  \n",
+            "..        ...       ...       ...       ...       ...         ...  \n",
+            "352         0         0         0         0         0           1  \n",
+            "353         0         0         1         0         0           1  \n",
+            "354         0         1         0         0         0           1  \n",
+            "355         0         0         1         0         0           1  \n",
+            "356    136.1K    127.7K    126.0K    119.2K    118.4K      895.1K  \n",
+            "\n",
+            "[357 rows x 9 columns]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_IHG_oregan= pd.read_csv('/content/API last 7 days usability matrix  - IHG_Oregon.csv')\n",
+        "print(data_IHG_oregan)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "I4dlZhz_UVTy",
+        "outputId": "fa7eadcd-59b5-4aa6-f392-bd8cc0c952fb"
+      },
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "                                                 API's 6/16/2025 6/17/2025  \\\n",
+            "0    /hk-ihg/feeds/ihg-interface/flattened-rate-pla...    352.0K    367.4K   \n",
+            "1             /thirdparty/ihg/etl/archived-reservation         0         0   \n",
+            "2    /thirdparty/etl-import/reservation/legacy-invo...         0         0   \n",
+            "3    /v4-reports/ihg/properties/*/dynamic-reports/g...    173.3K    164.6K   \n",
+            "4    /v4/ihg/properties/*/reservations/*/guests/modify    135.0K    127.9K   \n",
+            "..                                                 ...       ...       ...   \n",
+            "626                           /v4/ihg/service-accounts         1         0   \n",
+            "627                         /v4/ihg/service-accounts/*         1         0   \n",
+            "628                    /v4/ihg/service-accounts/*/keys         1         0   \n",
+            "629                      /v4/ihg/user-permission-roles         0         0   \n",
+            "630                                        Grand Total      1.4M      1.4M   \n",
+            "\n",
+            "    6/18/2025 6/19/2025 6/20/2025 6/21/2025 6/22/2025 Grand Total  \n",
+            "0      333.3K    347.2K    344.9K    302.2K    272.0K        2.3M  \n",
+            "1      370.6K    452.0K    379.7K    292.8K     86.8K        1.6M  \n",
+            "2      345.4K    434.9K    379.6K    288.9K     86.8K        1.5M  \n",
+            "3      184.7K    201.4K    234.6K    198.3K    209.2K        1.4M  \n",
+            "4      134.0K    147.3K    173.4K    146.9K    135.8K        1.0M  \n",
+            "..        ...       ...       ...       ...       ...         ...  \n",
+            "626         0         0         0         0         0           1  \n",
+            "627         0         0         0         0         0           1  \n",
+            "628         0         0         0         0         0           1  \n",
+            "629         1         0         0         0         0           1  \n",
+            "630      2.2M      2.4M      2.5M      2.0M      1.6M       13.6M  \n",
+            "\n",
+            "[631 rows x 9 columns]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "data_IHG_EMEA = pd.read_csv('/content/API last 7 days usability matrix  - IHG_EMEA.csv')\n",
+        "print(data_IHG_EMEA)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Qn2MV_XmUvEW",
+        "outputId": "7a22b410-0bf1-499a-a8c8-70c5c31d0bbd"
+      },
+      "execution_count": 17,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "                                                  API's 6/16/2025 6/17/2025  \\\n",
+            "0                     /v4/ihg/properties/*/dashboard/fd      2.6M      2.5M   \n",
+            "1     /thirdparty/ihg/properties/*/fiscal/germany/pr...      1.4M      1.4M   \n",
+            "2     /v4/ihg/properties/*/reservations/*/folios/*/p...    738.4K    723.8K   \n",
+            "3     /v4/ihg/properties/*/reservations/*/rate-detai...    569.4K    501.3K   \n",
+            "4              /v4/ihg/properties/*/reservations/status    439.0K    422.0K   \n",
+            "...                                                 ...       ...       ...   \n",
+            "1395  /v4/ihg/properties/*/reservations/undefined/ad...         1         0   \n",
+            "1396     /v4/ihg/properties/*/save-property-info-slaves         0         1   \n",
+            "1397  /v4/ihg/properties/*/save-time-setup-info-mast...         1         0   \n",
+            "1398    /v4/ihg/registered-devices/validate-device-hash         1         0   \n",
+            "1399                                        Grand Total     13.9M     13.3M   \n",
+            "\n",
+            "     6/18/2025 6/19/2025 6/20/2025 6/21/2025 6/22/2025 Grand Total  \n",
+            "0         2.5M      2.4M      2.5M      2.0M      2.0M       16.6M  \n",
+            "1         1.4M      1.4M      1.4M      1.4M      1.4M        9.8M  \n",
+            "2       791.3K    740.7K    777.8K    631.9K    676.4K        5.1M  \n",
+            "3       502.8K    488.0K    528.5K    457.3K    419.7K        3.5M  \n",
+            "4       438.6K    431.7K    462.9K    433.5K    433.8K        3.1M  \n",
+            "...        ...       ...       ...       ...       ...         ...  \n",
+            "1395         0         0         0         0         0           1  \n",
+            "1396         0         0         0         0         0           1  \n",
+            "1397         0         0         0         0         0           1  \n",
+            "1398         0         0         0         0         0           1  \n",
+            "1399     13.8M     13.1M     13.7M     11.5M     11.7M       91.0M  \n",
+            "\n",
+            "[1400 rows x 9 columns]\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
